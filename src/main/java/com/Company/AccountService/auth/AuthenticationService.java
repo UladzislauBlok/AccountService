@@ -28,11 +28,15 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .build();
 
-        repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+        if(repository.findByEmail(request.getEmail()).isEmpty()) {
+            repository.save(user);
+            var jwtToken = jwtService.generateToken(user);
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .build();
+        } else {
+            throw new UserExistException();
+        }
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {

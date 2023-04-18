@@ -5,4 +5,4 @@ To copy a project, you must:
 2) Type in git bash: git clone https://github.com/UladzislauBlok/AccountService
 3) Open and run the project in an IDE (Eclipse or Intellij IDEA), they will automatically download all dependencies and build the project
 
-Stage 2/7. 
+Stage 3/7. 

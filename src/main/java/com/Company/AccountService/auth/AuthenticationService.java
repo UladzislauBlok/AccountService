@@ -7,6 +7,7 @@ import com.Company.AccountService.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -52,5 +53,17 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
+    }
+
+    public void changePassword(ChangePassRequest request, Authentication authentication) {
+
+        User user = repository.findByEmail(authentication.getName()).orElseThrow();
+        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new SamePasswordException();
+        }
+
+        repository.delete(user);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        repository.save(user);
     }
 }

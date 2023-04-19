@@ -21,5 +21,5 @@ public class EmployeePaymentsDTO {
     private String name;
     private String lastname;
     private String period;
-    private String salary;
+    private Long salary;
 }

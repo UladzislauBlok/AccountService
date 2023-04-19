@@ -8,6 +8,7 @@ Available features without authentication:
 
 Available features with authentication:
 1) Change password (POST /api/auth/changepass), sends JSON with new password
+2) Getting the employee's salary data (GET /api/empl/payment), the query can be with the parameter (period), then the data about salarie for this period will be returned, when you make a query without the parameter, the data about all salaries will be returned
 
 The data is stored in a PostgreSQL database.
 Password is stored as Hash

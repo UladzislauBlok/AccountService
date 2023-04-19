@@ -61,6 +61,7 @@ public class AuthenticationService {
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new SamePasswordException();
         }
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         repository.save(user);
     }
 }

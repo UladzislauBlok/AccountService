@@ -1,4 +1,4 @@
-package com.Company.AccountService.config;
+package com.Company.AccountService.presentationLayer.configAuth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

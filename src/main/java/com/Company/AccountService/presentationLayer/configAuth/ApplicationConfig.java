@@ -1,6 +1,6 @@
-package com.Company.AccountService.config;
+package com.Company.AccountService.presentationLayer.configAuth;
 
-import com.Company.AccountService.user.UserRepository;
+import com.Company.AccountService.persistenceLayer.crudRepository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

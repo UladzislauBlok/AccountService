@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/security
+    url: jdbc:postgresql://localhost:5432/accountService
     username: SecurityUser
     password: password
     driver-class-name: org.postgresql.Driver
@@ -13,8 +13,4 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-
-server:
-  error:
-    include-message: always
 

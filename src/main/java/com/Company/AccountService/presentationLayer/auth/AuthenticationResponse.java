@@ -1,4 +1,4 @@
-package com.Company.AccountService.auth;
+package com.Company.AccountService.presentationLayer.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

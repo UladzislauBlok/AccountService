@@ -1,4 +1,4 @@
-package com.Company.AccountService.user;
+package com.Company.AccountService.businessLayer.user;
 
 
 import jakarta.persistence.*;

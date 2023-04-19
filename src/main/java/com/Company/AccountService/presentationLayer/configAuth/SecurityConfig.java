@@ -1,4 +1,4 @@
-package com.Company.AccountService.config;
+package com.Company.AccountService.presentationLayer.configAuth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

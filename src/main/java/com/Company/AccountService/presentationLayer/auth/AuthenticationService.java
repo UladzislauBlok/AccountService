@@ -1,9 +1,9 @@
-package com.Company.AccountService.auth;
+package com.Company.AccountService.presentationLayer.auth;
 
-import com.Company.AccountService.config.JwtService;
-import com.Company.AccountService.user.Role;
-import com.Company.AccountService.user.User;
-import com.Company.AccountService.user.UserRepository;
+import com.Company.AccountService.presentationLayer.configAuth.JwtService;
+import com.Company.AccountService.businessLayer.user.Role;
+import com.Company.AccountService.businessLayer.user.User;
+import com.Company.AccountService.persistenceLayer.crudRepository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -61,9 +61,6 @@ public class AuthenticationService {
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new SamePasswordException();
         }
-
-        repository.delete(user);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
         repository.save(user);
     }
 }

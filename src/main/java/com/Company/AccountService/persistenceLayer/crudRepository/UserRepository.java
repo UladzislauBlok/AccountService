@@ -1,5 +1,6 @@
-package com.Company.AccountService.user;
+package com.Company.AccountService.persistenceLayer.crudRepository;
 
+import com.Company.AccountService.businessLayer.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

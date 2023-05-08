@@ -1,5 +1,6 @@
 package com.Company.AccountService.presentationLayer.auth;
 
+import com.Company.AccountService.businessLayer.exception.CustomBAD_REQUEST_Exception;
 import com.Company.AccountService.presentationLayer.configAuth.JwtService;
 import com.Company.AccountService.businessLayer.user.Role;
 import com.Company.AccountService.businessLayer.user.User;
@@ -36,7 +37,7 @@ public class AuthenticationService {
                     .token(jwtToken)
                     .build();
         } else {
-            throw new UserExistException();
+            throw new CustomBAD_REQUEST_Exception("User exist!");
         }
     }
 
@@ -59,7 +60,7 @@ public class AuthenticationService {
 
         User user = repository.findByEmail(authentication.getName()).orElseThrow();
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new SamePasswordException();
+            throw new CustomBAD_REQUEST_Exception("The passwords must be different!");
         }
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         repository.save(user);

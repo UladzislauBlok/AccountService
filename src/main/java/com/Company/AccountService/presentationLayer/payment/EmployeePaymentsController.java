@@ -1,6 +1,7 @@
 package com.Company.AccountService.presentationLayer.payment;
 
-import com.Company.AccountService.businessLayer.paymentLogic.IncorrectPaymentDataException;
+
+import com.Company.AccountService.businessLayer.exception.CustomBAD_REQUEST_Exception;
 import com.Company.AccountService.businessLayer.paymentLogic.PaymentsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +28,13 @@ public class EmployeePaymentsController {
     }
 
     @PutMapping("/acct/payments")
-    public ResponseEntity<Map<String , String>> updatePayments(
+    public ResponseEntity<Map<String , String>> updatePayment(
             @RequestBody PaymentRequest paymentRequest
     ) {
-        paymentsService.updatePayments(paymentRequest);
+        paymentsService.updatePayment(paymentRequest);
         return ResponseEntity.ok(Map.of("status", "Updated successfully!"));
     }
+
 
     @GetMapping("/empl/payment")
     public Object getPaymentList(
@@ -44,7 +46,7 @@ public class EmployeePaymentsController {
         } else if (period.matches("^((0[1-9])|1[0-2])-(19|20)[0-9]{2}$")) {
             return paymentsService.getPayment(authentication, period);
         } else {
-            throw new IncorrectPaymentDataException();
+            throw new CustomBAD_REQUEST_Exception("Incorrect payment data");
         }
     }
 }

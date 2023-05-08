@@ -3,6 +3,7 @@ package com.Company.AccountService.businessLayer.paymentLogic;
 
 import com.Company.AccountService.businessLayer.employee.EmployeePayment;
 import com.Company.AccountService.businessLayer.employee.EmployeePaymentsDTO;
+import com.Company.AccountService.businessLayer.exception.CustomBAD_REQUEST_Exception;
 import com.Company.AccountService.persistenceLayer.crudRepository.EmployeePaymentsRepository;
 import com.Company.AccountService.persistenceLayer.crudRepository.UserRepository;
 import com.Company.AccountService.presentationLayer.payment.PaymentRequest;
@@ -25,9 +26,9 @@ public class PaymentsService {
     public void addPayments(List<PaymentRequest> paymentRequestList) {
         for (PaymentRequest paymentRequest : paymentRequestList) {
             if (!paymentsRequestValidator.isValid(paymentRequest)) {
-                throw new IncorrectPaymentDataException();
+                throw new CustomBAD_REQUEST_Exception("Incorrect payment data");
             } else if (employeePaymentsRepository.findByEmployeeAndPeriod(paymentRequest.getEmployee(), paymentRequest.getPeriod()).isPresent()) {
-                throw new PaymentDataEarlierExistException();
+                throw new CustomBAD_REQUEST_Exception("Payment data already exist");
             }
             var employeePayment = EmployeePayment.builder()
                     .employee(paymentRequest.getEmployee())
@@ -39,16 +40,16 @@ public class PaymentsService {
         }
     }
 
-    public void updatePayments(PaymentRequest paymentRequest) {
+    public void updatePayment(PaymentRequest paymentRequest) {
         if (!paymentsRequestValidator.isValid(paymentRequest)) {
-            throw new IncorrectPaymentDataException();
-        } else if (employeePaymentsRepository.findByEmployeeAndPeriod(paymentRequest.getEmployee(), paymentRequest.getPeriod()).isEmpty()) {
-            throw new PaymentDataDoesntExistException();
+            throw new CustomBAD_REQUEST_Exception("Incorrect payment data");
+        }  try {
+            var employeePayment = employeePaymentsRepository.findByEmployeeAndPeriod(paymentRequest.getEmployee(), paymentRequest.getPeriod()).orElseThrow();
+            employeePayment.setSalary(paymentRequest.getSalary());
+            employeePaymentsRepository.save(employeePayment);
+        } catch (Exception e){
+            throw new CustomBAD_REQUEST_Exception("Payment data doesn't exist");
         }
-        var employeePayment = employeePaymentsRepository.findByEmployeeAndPeriod(paymentRequest.getEmployee(), paymentRequest.getPeriod()).orElseThrow();
-        employeePayment.setSalary(paymentRequest.getSalary());
-
-        employeePaymentsRepository.save(employeePayment);
     }
 
     public List<EmployeePaymentsDTO> getPaymentList(Authentication authentication) {

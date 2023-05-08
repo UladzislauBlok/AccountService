@@ -1,4 +1,4 @@
-package com.Company.AccountService.presentationLayer.payment;
+package com.Company.AccountService.presentationLayer.controllerPayment;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PaymentRequest {
 
-    private String employee;
+    private long employeeID;
     private String period;
     private Long salary;
 }

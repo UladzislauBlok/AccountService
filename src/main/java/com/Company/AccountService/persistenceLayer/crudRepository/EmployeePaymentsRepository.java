@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface EmployeePaymentsRepository extends JpaRepository<EmployeePayment, Integer> {
 
-    List<EmployeePayment> findAllByEmployee(String employee);
+    List<EmployeePayment> findAllByEmployeeId(long employeeID);
 
-    Optional<EmployeePayment> findByEmployeeAndPeriod(String employee, String period);
+    Optional<EmployeePayment> findByEmployeeIdAndPeriod(long employeeID, String period);
 }

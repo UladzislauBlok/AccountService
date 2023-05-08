@@ -6,7 +6,7 @@ import com.Company.AccountService.businessLayer.employee.EmployeePaymentsDTO;
 import com.Company.AccountService.businessLayer.exception.CustomBAD_REQUEST_Exception;
 import com.Company.AccountService.persistenceLayer.crudRepository.EmployeePaymentsRepository;
 import com.Company.AccountService.persistenceLayer.crudRepository.UserRepository;
-import com.Company.AccountService.presentationLayer.payment.PaymentRequest;
+import com.Company.AccountService.presentationLayer.controllerPayment.PaymentRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -27,11 +27,11 @@ public class PaymentsService {
         for (PaymentRequest paymentRequest : paymentRequestList) {
             if (!paymentsRequestValidator.isValid(paymentRequest)) {
                 throw new CustomBAD_REQUEST_Exception("Incorrect payment data");
-            } else if (employeePaymentsRepository.findByEmployeeAndPeriod(paymentRequest.getEmployee(), paymentRequest.getPeriod()).isPresent()) {
+            } else if (employeePaymentsRepository.findByEmployeeIdAndPeriod(paymentRequest.getEmployeeID(), paymentRequest.getPeriod()).isPresent()) {
                 throw new CustomBAD_REQUEST_Exception("Payment data already exist");
             }
             var employeePayment = EmployeePayment.builder()
-                    .employee(paymentRequest.getEmployee())
+                    .employee(userRepository.findById(paymentRequest.getEmployeeID()).orElseThrow())
                     .period(paymentRequest.getPeriod())
                     .salary(paymentRequest.getSalary())
                     .build();
@@ -44,7 +44,7 @@ public class PaymentsService {
         if (!paymentsRequestValidator.isValid(paymentRequest)) {
             throw new CustomBAD_REQUEST_Exception("Incorrect payment data");
         }  try {
-            var employeePayment = employeePaymentsRepository.findByEmployeeAndPeriod(paymentRequest.getEmployee(), paymentRequest.getPeriod()).orElseThrow();
+            var employeePayment = employeePaymentsRepository.findByEmployeeIdAndPeriod(paymentRequest.getEmployeeID(), paymentRequest.getPeriod()).orElseThrow();
             employeePayment.setSalary(paymentRequest.getSalary());
             employeePaymentsRepository.save(employeePayment);
         } catch (Exception e){
@@ -54,7 +54,8 @@ public class PaymentsService {
 
     public List<EmployeePaymentsDTO> getPaymentList(Authentication authentication) {
         String emailEmployee = authentication.getName();
-        List<EmployeePayment> payments = employeePaymentsRepository.findAllByEmployee(emailEmployee);
+        long employeeID = userRepository.findByEmail(emailEmployee).orElseThrow().getId();
+        List<EmployeePayment> payments = employeePaymentsRepository.findAllByEmployeeId(employeeID);
         var user = userRepository.findByEmail(emailEmployee).orElseThrow();
 
         List<EmployeePaymentsDTO> paymentsDTOList = new ArrayList<>(payments.size());
@@ -73,10 +74,11 @@ public class PaymentsService {
 
     public EmployeePaymentsDTO getPayment(Authentication authentication, String period) {
         String emailEmployee = authentication.getName();
-        if (employeePaymentsRepository.findByEmployeeAndPeriod(emailEmployee, period).isEmpty()){
+        long employeeID = userRepository.findByEmail(emailEmployee).orElseThrow().getId();
+        if (employeePaymentsRepository.findByEmployeeIdAndPeriod(employeeID, period).isEmpty()){
             return null;
         }
-        var payments = employeePaymentsRepository.findByEmployeeAndPeriod(emailEmployee, period).orElseThrow();
+        var payments = employeePaymentsRepository.findByEmployeeIdAndPeriod(employeeID, period).orElseThrow();
         var user = userRepository.findByEmail(emailEmployee).orElseThrow();
 
         return new EmployeePaymentsDTO(

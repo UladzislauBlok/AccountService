@@ -30,6 +30,10 @@ Available features with authentication for User:
 Available features with authentication for Auditor:
 1) Getting a list of logs (GET /api/security/events/)
 
+An HTTPS connection with its own certificate is used:
+-genkeypair -alias accountant_service -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore keystore.p12 -validity 3650
+Password 952738
+
 The data is stored in a PostgreSQL database.
 Password is stored as Hash
 
@@ -39,5 +43,3 @@ To copy a project, you must:
 3) Open and run the project in an IDE (Eclipse or Intellij IDEA), they will automatically download all dependencies and build the project
 
 p.s. You must have PostgreSQL installed
-
-Stage 6/7. 

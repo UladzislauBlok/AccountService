@@ -1,6 +1,8 @@
 package com.Company.AccountService.presentationLayer.configAuth;
 
+import com.Company.AccountService.businessLayer.logging.LogService;
 import com.Company.AccountService.persistenceLayer.crudRepository.UserRepository;
+import com.Company.AccountService.presentationLayer.auth.CustomAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfig {
 
     private final UserRepository repository;
+    private final LogService logService;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -40,6 +43,11 @@ public class ApplicationConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(13);
+    }
+
+    @Bean
+    public CustomAccessDeniedHandler customAccessDeniedHandler() {
+        return new CustomAccessDeniedHandler(logService);
     }
 }

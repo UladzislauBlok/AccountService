@@ -3,16 +3,20 @@ package com.Company.AccountService.businessLayer.adminLogic;
 import com.Company.AccountService.businessLayer.employee.EmployeePayment;
 import com.Company.AccountService.businessLayer.exception.CustomBAD_REQUEST_Exception;
 import com.Company.AccountService.businessLayer.exception.CustomNOT_FOUND_Exception;
+import com.Company.AccountService.businessLayer.logging.LogService;
 import com.Company.AccountService.businessLayer.user.User;
 import com.Company.AccountService.businessLayer.user.UserDTO;
 import com.Company.AccountService.persistenceLayer.crudRepository.EmployeePaymentsRepository;
 import com.Company.AccountService.persistenceLayer.crudRepository.RoleRepository;
 import com.Company.AccountService.persistenceLayer.crudRepository.UserRepository;
 import com.Company.AccountService.presentationLayer.controllerAdminOp.UpdateRoleRequest;
+import com.Company.AccountService.presentationLayer.controllerAdminOp.UpdateUserAccessRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,7 @@ public class AdminService {
     private final EmployeePaymentsRepository employeePaymentsRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final LogService logService;
 
     public List<UserDTO> getUserList() {
         List<User> userList = userRepository.findAll();
@@ -38,6 +43,7 @@ public class AdminService {
         List<EmployeePayment> employeePaymentList =  employeePaymentsRepository.findAllByEmployeeId(foundedUser.getId());
         employeePaymentsRepository.deleteAll(employeePaymentList);
         userRepository.delete(foundedUser);
+        logService.deleteUserLog(foundedUser.getEmail());
     }
 
     public UserDTO updateUserRole(UpdateRoleRequest updateRoleRequest) {
@@ -55,6 +61,7 @@ public class AdminService {
             }
             foundedUser.getRoles().add(0, roleRepository.findByName("ROLE_" + updateRoleRequest.getRole()).orElseThrow());
             userRepository.save(foundedUser);
+            logService.grandRoleLog(foundedUser.getEmail(), updateRoleRequest.getRole());
             return new UserDTO(foundedUser);
         }
         if (updateRoleRequest.getOperation().equals("REMOVE")) {
@@ -69,6 +76,7 @@ public class AdminService {
             }
             foundedUser.getRoles().remove(roleRepository.findByName("ROLE_" + updateRoleRequest.getRole()).orElseThrow());
             userRepository.save(foundedUser);
+            logService.removeRoleLog(foundedUser.getEmail(), updateRoleRequest.getRole());
             return new UserDTO(foundedUser);
         }
         throw new CustomBAD_REQUEST_Exception("Unknown operation");
@@ -77,5 +85,28 @@ public class AdminService {
     public void deleteUsers() {
         employeePaymentsRepository.deleteAll();
         userRepository.deleteAll();
+    }
+
+    public ResponseEntity<Map<String, String>> updateUserAccess(UpdateUserAccessRequest updateUserAccessRequest) {
+        if (userRepository.findByEmail(updateUserAccessRequest.getUserEmail()).isEmpty()) {
+            throw new CustomNOT_FOUND_Exception("User not found!");
+        }
+        var foundedUser = userRepository.findByEmail(updateUserAccessRequest.getUserEmail()).orElseThrow();
+        if (foundedUser.getRoles().contains(roleRepository.findByName("ROLE_ADMINISTRATOR").orElseThrow())) {
+            throw new CustomBAD_REQUEST_Exception("Can't lock the ADMINISTRATOR!");
+        }
+        if (updateUserAccessRequest.getOperation().equals("LOCK")) {
+            foundedUser.setAccountNonLocked(false);
+            userRepository.save(foundedUser);
+            logService.lockUserByAdmin(foundedUser.getEmail());
+            return ResponseEntity.ok(Map.of("status", "User " + foundedUser.getEmail() + " locked!"));
+        } else if (updateUserAccessRequest.getOperation().equals("UNLOCK")) {
+            foundedUser.setAccountNonLocked(true);
+            foundedUser.setFailedAttempt(0);
+            userRepository.save(foundedUser);
+            logService.unlockUserByAdmin(foundedUser.getEmail());
+            return ResponseEntity.ok(Map.of("status", "User " + foundedUser.getEmail() + " unlocked!"));
+        }
+        throw new CustomBAD_REQUEST_Exception("Unknown operation");
     }
 }

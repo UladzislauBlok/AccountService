@@ -9,6 +9,7 @@ There are three types of users:
 1) Administrator
 2) Accountingtech(ACCOUNTANT)
 3) User
+4) Auditor
 
 Available features with authentication for all users:
 1) Change password (POST /api/auth/changepass), sends JSON with new password
@@ -26,6 +27,9 @@ Available features with authentication for Accountingtech:
 Available features with authentication for User:
 1) Getting the salary data (GET /api/empl/payment), the query can be with the parameter (period), then the data about salarie for this period will be returned, when you make a query without the parameter, the data about all salaries will be returned
 
+Available features with authentication for Auditor:
+1) Getting a list of logs (GET /api/security/events/)
+
 The data is stored in a PostgreSQL database.
 Password is stored as Hash
 
@@ -36,4 +40,4 @@ To copy a project, you must:
 
 p.s. You must have PostgreSQL installed
 
-Stage 5/7. 
+Stage 6/7. 

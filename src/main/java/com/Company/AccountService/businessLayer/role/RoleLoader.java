@@ -19,6 +19,7 @@ public class RoleLoader {
                 repository.save(new Role("ROLE_ADMINISTRATOR"));
                 repository.save(new Role("ROLE_USER"));
                 repository.save(new Role("ROLE_ACCOUNTANT"));
+                repository.save(new Role("ROLE_AUDITOR"));
             }
         } catch (Exception e) {
 

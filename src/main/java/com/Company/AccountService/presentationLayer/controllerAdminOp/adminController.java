@@ -37,4 +37,10 @@ public class adminController {
     public UserDTO updateUserRole(@RequestBody UpdateRoleRequest updateRoleRequest) {
         return adminService.updateUserRole(updateRoleRequest);
     }
+
+    @PutMapping("/admin/user/access")
+    public ResponseEntity<Map<String , String>> updateUserAccess(
+            @RequestBody UpdateUserAccessRequest updateUserAccessRequest) {
+        return adminService.updateUserAccess(updateUserAccessRequest);
+    }
 }

@@ -29,6 +29,8 @@ public class User implements UserDetails {
     private String lastname;
     private String email;
     private String password;
+    private int failedAttempt;
+    private boolean accountNonLocked;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
@@ -56,7 +58,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return accountNonLocked;
     }
 
     @Override

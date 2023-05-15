@@ -1,5 +1,6 @@
 package com.Company.AccountService.presentationLayer.configAuth;
 
+import com.Company.AccountService.presentationLayer.auth.CustomAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,10 +18,13 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler)
+                .and()
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
@@ -28,6 +32,7 @@ public class SecurityConfig {
                 .requestMatchers("api/empl/payment").hasAnyRole("USER", "ACCOUNTANT")
                 .requestMatchers("api/acct/payments").hasRole("ACCOUNTANT")
                 .requestMatchers("api/admin/**").hasRole("ADMINISTRATOR")
+                .requestMatchers("api/security/**").hasRole("AUDITOR")
                 .anyRequest().permitAll()
                 .and()
                 .sessionManagement()
